@@ -213,7 +213,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-02 17:20:20 / 修改时间：18:03:58" itemprop="dateCreated datePublished" datetime="2021-01-02T17:20:20+08:00">2021-01-02</time>
+              <time title="创建时间：2021-01-02 17:20:20 / 修改时间：19:09:48" itemprop="dateCreated datePublished" datetime="2021-01-02T17:20:20+08:00">2021-01-02</time>
             </span>
 
           
@@ -234,10 +234,53 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近重新整理之前的分析绘图结果，发现一些有意思的图，来分享出来。2020年美国飓风 <code>Laura</code> 的临近登陆时，NOAA派出飞机投放探空仪观测，很快推特上便有了相应的T-lnP图，如下图。</p>
-<p><img src="laura_tlnp.jpg" alt="Lena"></p>
-<p>而我国在2020年，也进行了某某计划，在台风过境后，即在台风外围投放了数十枚探空仪，获取到了非常密集的温压湿风探空曲线。</p>
-<h3 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h3><h3 id="绘制T-lnP图"><a href="#绘制T-lnP图" class="headerlink" title="绘制T-lnP图"></a>绘制T-lnP图</h3><p><img src="tlnp_20200802T10.png" alt="haiyan"></p>
+          <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近重新整理之前的分析结果，发现一些有意思的图，来分享出来。2020年美国飓风 <code>Laura</code> 的临近登陆时，NOAA派出飞机投放探空仪观测，很快推特上便有了相应的T-lnP图，如下图。</p>
+<!-- ![Lena](/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg?40) -->
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg" width="30%" height="30%">
+</div>
+
+<p>而我国在2020年，也进行了某某计划，在台风森拉克过境后，即在台风外围投放了数十枚探空仪，获取到了非常密集的温压湿风探空曲线。这是当时的卫星云图(来源：韩国GK2A卫星)，可以看到当时台风主体已经进入越南境内，而释放探空仪的位置在海南岛东南近海。</p>
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_rgb-true_ea010lc_202008021000.srv.png" width="50%" height="50%">
+
+<p>真彩色云图</p>
+</div>
+
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_enhc-color-ir105_ea020lc_202008021000.srv.png" width="50%" height="50%">
+
+<p>红外增强云图</p>
+</div>
+
+
+
+<h3 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h3><p>由于数据是excel的表格，我们用pandas来读取表单。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime,timedelta</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">f = <span class="string">&#x27;17_54_4.xls&#x27;</span></span><br><span class="line"><span class="comment"># 将时间解析为datetime类</span></span><br><span class="line">dateparse = <span class="keyword">lambda</span> x: datetime.strptime(<span class="string">&#x27;2020-08-02 &#x27;</span> + x, <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">df = pd.read_excel(f,sheet_name=<span class="number">0</span>,parse_dates=[<span class="string">&#x27;时间&#x27;</span>], date_parser=dateparse)</span><br><span class="line"><span class="comment"># 时间         纬度          经度     位势高度     温度     湿度     气压  风速  风向</span></span><br><span class="line"><span class="comment">#                                     m           degC     %       hPa   m/s  deg   </span></span><br><span class="line"><span class="comment"># convert BJT -&gt; UTC</span></span><br><span class="line">df[<span class="string">&#x27;时间&#x27;</span>] = df[<span class="string">&#x27;时间&#x27;</span>] - timedelta(hours=<span class="number">8</span>)</span><br><span class="line">df[df == -<span class="number">9999</span>] = np.nan</span><br><span class="line">df = df[::-<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/drop_res.png" width="50%" height="50%">
+
+<p>读取结果</p>
+</div>
+
+
+<h3 id="绘制T-lnP图"><a href="#绘制T-lnP图" class="headerlink" title="绘制T-lnP图"></a>绘制T-lnP图</h3><p>用NCAR开发的<code>Metpy</code>包来画T-lnP图，官方链接为：<a target="_blank" rel="noopener" href="https://unidata.github.io/MetPy/latest/">https://unidata.github.io/MetPy/latest/</a><br>官方提供了很多例子，包括画常规天气图和T-lnP，以及计算物理量、诊断量。链接：<a target="_blank" rel="noopener" href="https://unidata.github.io/MetPy/latest/examples/index.html">https://unidata.github.io/MetPy/latest/examples/index.html</a></p>
+<p>根据<code>Simple_Sounding</code>例子，来画我们需要的最简单的T-lnP。注意：美国人用的是斜T-lnP，即旋转30度，而国内是T-lnP，需要改成0度。对应的函数接口为：<br><a target="_blank" rel="noopener" href="https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT">https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT</a></p>
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/skewt_api.png" width="60%" height="60%">
+
+<p>SkewT的函数说明</p>
+</div>
+
+<p>下面为具体绘图代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> metpy.calc <span class="keyword">as</span> mpcalc</span><br><span class="line"><span class="keyword">from</span> metpy.plots <span class="keyword">import</span> SkewT, Hodograph</span><br><span class="line"><span class="keyword">from</span> metpy.units <span class="keyword">import</span> units</span><br><span class="line"><span class="keyword">import</span> metpy.interpolate <span class="keyword">as</span> mpi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为Metpy的数据类</span></span><br><span class="line">p = df[<span class="string">&#x27;气压&#x27;</span>].values * units.hPa</span><br><span class="line">T = df[<span class="string">&#x27;温度&#x27;</span>].values * units.degC</span><br><span class="line">rh = df[<span class="string">&#x27;湿度&#x27;</span>].values / <span class="number">100</span></span><br><span class="line">Td = mpcalc.dewpoint_rh(T, rh)</span><br><span class="line">wsp = df[<span class="string">&#x27;风速&#x27;</span>].values * units(<span class="string">&#x27;m/s&#x27;</span>)</span><br><span class="line">wdr = df[<span class="string">&#x27;风向&#x27;</span>].values * units.degrees</span><br><span class="line">u, v = mpcalc.wind_components(wsp, wdr)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开一个画布</span></span><br><span class="line">fig = plt.figure(figsize=(<span class="number">12</span>, <span class="number">12</span>))</span><br><span class="line">skew = SkewT(fig, rotation=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画温度、露点和风</span></span><br><span class="line">skew.plot(p, T, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">skew.plot(p, Td, <span class="string">&#x27;g&#x27;</span>)</span><br><span class="line">skew.plot_barbs(p[::<span class="number">5</span>], u[::<span class="number">5</span>], v[::<span class="number">5</span>])</span><br><span class="line">skew.ax.set_ylim(<span class="number">1000</span>, <span class="number">250</span>)</span><br><span class="line">skew.ax.set_xlim(-<span class="number">40</span>, <span class="number">30</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算对流凝结高度，p[0]为最低层气压</span></span><br><span class="line">lcl_pressure, lcl_temperature = mpcalc.lcl(p[<span class="number">0</span>], T[<span class="number">0</span>], Td[<span class="number">0</span>])</span><br><span class="line">skew.plot(lcl_pressure, lcl_temperature, <span class="string">&#x27;ko&#x27;</span>, markerfacecolor=<span class="string">&#x27;black&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画状态曲线</span></span><br><span class="line">prof = mpcalc.parcel_profile(p, T[<span class="number">0</span>], Td[<span class="number">0</span>]).to(<span class="string">&#x27;degC&#x27;</span>)</span><br><span class="line">skew.plot(p, prof, <span class="string">&#x27;k&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画对流有效位能和抑制能</span></span><br><span class="line">skew.shade_cin(p, T, prof)</span><br><span class="line">skew.shade_cape(p, T, prof)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画0度温度线，图中紫色虚线</span></span><br><span class="line">skew.ax.axvline(<span class="number">0</span>, color=<span class="string">&#x27;c&#x27;</span>, linestyle=<span class="string">&#x27;--&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 干绝热线</span></span><br><span class="line">skew.plot_dry_adiabats()</span><br><span class="line"><span class="comment"># 湿绝热线</span></span><br><span class="line">skew.plot_moist_adiabats()</span><br><span class="line"><span class="comment"># 等比湿线</span></span><br><span class="line">skew.plot_mixing_lines()</span><br></pre></td></tr></table></figure>
+
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/tlnp_20200802T10.png" width="60%" height="60%">
+
+<p>T-lnP图, 世界时: 2020-08-02T10</p>
+</div>
+
 
       
     </div>
