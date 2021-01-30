@@ -20,28 +20,38 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Valar Dohaeris">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="Prepbufr 格式数据介绍及解码Prepbufr的背景及介绍Prepbufr 数据是美国NCEP在bufr格式数据基础上开发的存储质控观测数据的格式。Prepbufr应用于美国NCEP的业务预报系统，比如GDAS同化系统，RAP&#x2F;HRRR,NAM等等。后面区域模式本质是WRFDA+WRF。国内也有引进RAP&#x2F;HRRR区域数值预报系统，如武汉暴雨研究所，福建省局都是RAP&#x2F;HRRR，华东区域模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prepbufr introduction and decoding">
+<meta property="og:url" content="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/index.html">
 <meta property="og:site_name" content="Valar Dohaeris">
+<meta property="og:description" content="Prepbufr 格式数据介绍及解码Prepbufr的背景及介绍Prepbufr 数据是美国NCEP在bufr格式数据基础上开发的存储质控观测数据的格式。Prepbufr应用于美国NCEP的业务预报系统，比如GDAS同化系统，RAP&#x2F;HRRR,NAM等等。后面区域模式本质是WRFDA+WRF。国内也有引进RAP&#x2F;HRRR区域数值预报系统，如武汉暴雨研究所，福建省局都是RAP&#x2F;HRRR，华东区域模式">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/obsproc_workflow.png">
+<meta property="og:image" content="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/54511_surface_qc.png">
+<meta property="og:image" content="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/2020011900_adpsfc.png">
+<meta property="og:image" content="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/2020011900_adpupa.png">
+<meta property="article:published_time" content="2021-01-30T16:46:16.000Z">
+<meta property="article:modified_time" content="2021-01-30T19:51:33.073Z">
 <meta property="article:author" content="Dawn">
+<meta property="article:tag" content="气象数据">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/obsproc_workflow.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/01/31/Prepbufr-introduction-and-decoding/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Valar Dohaeris</title>
+  <title>Prepbufr introduction and decoding | Valar Dohaeris</title>
   
 
 
@@ -182,9 +192,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -200,10 +211,9 @@
       <meta itemprop="name" content="Valar Dohaeris">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/31/Prepbufr-introduction-and-decoding/" class="post-title-link" itemprop="url">Prepbufr introduction and decoding</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Prepbufr introduction and decoding
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -234,7 +244,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="Prepbufr-格式数据介绍及解码"><a href="#Prepbufr-格式数据介绍及解码" class="headerlink" title="Prepbufr 格式数据介绍及解码"></a>Prepbufr 格式数据介绍及解码</h2><h3 id="Prepbufr的背景及介绍"><a href="#Prepbufr的背景及介绍" class="headerlink" title="Prepbufr的背景及介绍"></a>Prepbufr的背景及介绍</h3><p>Prepbufr 数据是美国NCEP在bufr格式数据基础上开发的存储质控观测数据的格式。Prepbufr应用于美国NCEP的业务预报系统，比如GDAS同化系统，RAP/HRRR,NAM等等。后面区域模式本质是WRFDA+WRF。国内也有引进RAP/HRRR区域数值预报系统，如武汉暴雨研究所，福建省局都是RAP/HRRR，华东区域模式是APRS+WRF，北京市气象局睿图模式：GSI+WRF。中国气象局数值预报中心的GRAPES模式中观测是文本文件，没有使用Prepbufr或bufr。</p>
+        <h2 id="Prepbufr-格式数据介绍及解码"><a href="#Prepbufr-格式数据介绍及解码" class="headerlink" title="Prepbufr 格式数据介绍及解码"></a>Prepbufr 格式数据介绍及解码</h2><h3 id="Prepbufr的背景及介绍"><a href="#Prepbufr的背景及介绍" class="headerlink" title="Prepbufr的背景及介绍"></a>Prepbufr的背景及介绍</h3><p>Prepbufr 数据是美国NCEP在bufr格式数据基础上开发的存储质控观测数据的格式。Prepbufr应用于美国NCEP的业务预报系统，比如GDAS同化系统，RAP/HRRR,NAM等等。后面区域模式本质是WRFDA+WRF。国内也有引进RAP/HRRR区域数值预报系统，如武汉暴雨研究所，福建省局都是RAP/HRRR，华东区域模式是APRS+WRF，北京市气象局睿图模式：GSI+WRF。中国气象局数值预报中心的GRAPES模式中观测是文本文件，没有使用Prepbufr或bufr。</p>
 <p>NCEP Prepbufr介绍：<a target="_blank" rel="noopener" href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm</a><br>GSI同化系统中Prepbufr介绍：<br><a target="_blank" rel="noopener" href="https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf">https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf</a><br><a target="_blank" rel="noopener" href="http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf">http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf</a></p>
 <div align="center">
 <img src="/2021/01/31/Prepbufr-introduction-and-decoding/obsproc_workflow.png" width="40%" height="40%">
@@ -378,281 +388,33 @@
 <p><strong>写在最后</strong>：</p>
 <p>以上解码<code>Prepbufr</code>我们可以获得完整的全球GTS交换数据。对于国内常常拿不到的常规观测或探空，通过解码<code>Prepbufr</code>获取也不失为一种“正当途径”。</p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/%E6%B0%94%E8%B1%A1%E6%95%B0%E6%8D%AE/" rel="tag"># 气象数据</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/02/Python-processing-sounding-data-and-plotting/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/arya.jpg">
-      <meta itemprop="name" content="Dawn">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Valar Dohaeris">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/02/Python-processing-sounding-data-and-plotting/" class="post-title-link" itemprop="url">Python processing sounding data and plotting</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-02 17:20:20 / 修改时间：19:55:02" itemprop="dateCreated datePublished" datetime="2021-01-02T17:20:20+08:00">2021-01-02</time>
-            </span>
-
-          
-            <span id="/2021/01/02/Python-processing-sounding-data-and-plotting/" class="post-meta-item leancloud_visitors" data-flag-title="Python processing sounding data and plotting" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近重新整理之前的分析结果，发现一些有意思的图，来分享出来。2020年美国飓风 <code>Laura</code> 临近登陆时，NOAA派出飞机投放探空仪观测，很快推特上便有了相应的T-lnP图，如下图。</p>
-<!-- ![Lena](/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg?40) -->
-<div align="center">
-<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg" width="30%" height="30%">
-</div>
-
-<p>而我国在2020年，也进行了某某计划，在台风森拉克过境后，即在台风外围投放了数十枚探空仪，获取到了非常密集的温压湿风探空曲线。这是当时的卫星云图(来源：韩国GK2A卫星)，可以看到当时台风主体已经进入越南境内，而释放探空仪的位置在海南岛东南近海。</p>
-<div align="center">
-<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_rgb-true_ea010lc_202008021000.srv.png" width="50%" height="50%">
-
-<p>真彩色云图</p>
-</div>
-
-<div align="center">
-<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_enhc-color-ir105_ea020lc_202008021000.srv.png" width="50%" height="50%">
-
-<p>红外增强云图</p>
-</div>
+        
 
 
-
-<h3 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h3><p>由于数据是excel的表格，我们用pandas来读取表单。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime,timedelta</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">f = <span class="string">&#x27;17_54_4.xls&#x27;</span></span><br><span class="line"><span class="comment"># 将时间解析为datetime类</span></span><br><span class="line">dateparse = <span class="keyword">lambda</span> x: datetime.strptime(<span class="string">&#x27;2020-08-02 &#x27;</span> + x, <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">df = pd.read_excel(f,sheet_name=<span class="number">0</span>,parse_dates=[<span class="string">&#x27;时间&#x27;</span>], date_parser=dateparse)</span><br><span class="line"><span class="comment"># 时间         纬度          经度     位势高度     温度     湿度     气压  风速  风向</span></span><br><span class="line"><span class="comment">#                                     m           degC     %       hPa   m/s  deg   </span></span><br><span class="line"><span class="comment"># convert BJT -&gt; UTC</span></span><br><span class="line">df[<span class="string">&#x27;时间&#x27;</span>] = df[<span class="string">&#x27;时间&#x27;</span>] - timedelta(hours=<span class="number">8</span>)</span><br><span class="line">df[df == -<span class="number">9999</span>] = np.nan</span><br><span class="line">df = df[::-<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
-<div align="center">
-<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/drop_res.png" width="50%" height="50%">
-
-<p>读取结果</p>
-</div>
-
-
-<h3 id="绘制T-lnP图"><a href="#绘制T-lnP图" class="headerlink" title="绘制T-lnP图"></a>绘制T-lnP图</h3><p>用NCAR开发的<code>Metpy</code>包来画T-lnP图，官方链接为：<a target="_blank" rel="noopener" href="https://unidata.github.io/MetPy/latest/">https://unidata.github.io/MetPy/latest/</a><br>官方提供了很多例子，包括画常规天气图和T-lnP，以及计算物理量、诊断量。链接：<a target="_blank" rel="noopener" href="https://unidata.github.io/MetPy/latest/examples/index.html">https://unidata.github.io/MetPy/latest/examples/index.html</a></p>
-<p>根据<code>Simple_Sounding</code>例子，来画我们需要的最简单的T-lnP。注意：美国人用的是斜T-lnP，即旋转30度，而国内是T-lnP，需要改成0度。对应的函数接口为：<br><a target="_blank" rel="noopener" href="https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT">https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT</a></p>
-<div align="center">
-<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/skewt_api.png" width="60%" height="60%">
-
-<p>SkewT的函数说明</p>
-</div>
-
-<p>下面为具体绘图代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> metpy.calc <span class="keyword">as</span> mpcalc</span><br><span class="line"><span class="keyword">from</span> metpy.plots <span class="keyword">import</span> SkewT, Hodograph</span><br><span class="line"><span class="keyword">from</span> metpy.units <span class="keyword">import</span> units</span><br><span class="line"><span class="keyword">import</span> metpy.interpolate <span class="keyword">as</span> mpi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为Metpy的数据类</span></span><br><span class="line">p = df[<span class="string">&#x27;气压&#x27;</span>].values * units.hPa</span><br><span class="line">T = df[<span class="string">&#x27;温度&#x27;</span>].values * units.degC</span><br><span class="line">rh = df[<span class="string">&#x27;湿度&#x27;</span>].values / <span class="number">100</span></span><br><span class="line">Td = mpcalc.dewpoint_rh(T, rh)</span><br><span class="line">wsp = df[<span class="string">&#x27;风速&#x27;</span>].values * units(<span class="string">&#x27;m/s&#x27;</span>)</span><br><span class="line">wdr = df[<span class="string">&#x27;风向&#x27;</span>].values * units.degrees</span><br><span class="line">u, v = mpcalc.wind_components(wsp, wdr)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开一个画布</span></span><br><span class="line">fig = plt.figure(figsize=(<span class="number">12</span>, <span class="number">12</span>))</span><br><span class="line">skew = SkewT(fig, rotation=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画温度、露点和风</span></span><br><span class="line">skew.plot(p, T, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">skew.plot(p, Td, <span class="string">&#x27;g&#x27;</span>)</span><br><span class="line">skew.plot_barbs(p[::<span class="number">5</span>], u[::<span class="number">5</span>], v[::<span class="number">5</span>])</span><br><span class="line">skew.ax.set_ylim(<span class="number">1000</span>, <span class="number">250</span>)</span><br><span class="line">skew.ax.set_xlim(-<span class="number">40</span>, <span class="number">30</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算对流凝结高度，p[0]为最低层气压</span></span><br><span class="line">lcl_pressure, lcl_temperature = mpcalc.lcl(p[<span class="number">0</span>], T[<span class="number">0</span>], Td[<span class="number">0</span>])</span><br><span class="line">skew.plot(lcl_pressure, lcl_temperature, <span class="string">&#x27;ko&#x27;</span>, markerfacecolor=<span class="string">&#x27;black&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画状态曲线</span></span><br><span class="line">prof = mpcalc.parcel_profile(p, T[<span class="number">0</span>], Td[<span class="number">0</span>]).to(<span class="string">&#x27;degC&#x27;</span>)</span><br><span class="line">skew.plot(p, prof, <span class="string">&#x27;k&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画对流有效位能和抑制能</span></span><br><span class="line">skew.shade_cin(p, T, prof)</span><br><span class="line">skew.shade_cape(p, T, prof)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画0度温度线，图中紫色虚线</span></span><br><span class="line">skew.ax.axvline(<span class="number">0</span>, color=<span class="string">&#x27;c&#x27;</span>, linestyle=<span class="string">&#x27;--&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 干绝热线</span></span><br><span class="line">skew.plot_dry_adiabats()</span><br><span class="line"><span class="comment"># 湿绝热线</span></span><br><span class="line">skew.plot_moist_adiabats()</span><br><span class="line"><span class="comment"># 等比湿线</span></span><br><span class="line">skew.plot_mixing_lines()</span><br></pre></td></tr></table></figure>
-
-<div align="center">
-<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/tlnp_20200802T10.png" width="60%" height="60%">
-
-<p>T-lnP图, 世界时: 2020-08-02T10</p>
-</div>
-
-<p>可以看出台风过后CAPE还是比较大。好了，这期就到这了。</p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/02/Python-processing-sounding-data-and-plotting/" rel="prev" title="Python processing sounding data and plotting">
+      <i class="fa fa-chevron-left"></i> Python processing sounding data and plotting
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/29/Container-technology-in-meteorological-applications/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/arya.jpg">
-      <meta itemprop="name" content="Dawn">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Valar Dohaeris">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/29/Container-technology-in-meteorological-applications/" class="post-title-link" itemprop="url">Container technology in meteorological applications</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-12-29 21:03:30 / 修改时间：21:04:56" itemprop="dateCreated datePublished" datetime="2020-12-29T21:03:30+08:00">2020-12-29</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/IT%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">IT技术</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/12/29/Container-technology-in-meteorological-applications/" class="post-meta-item leancloud_visitors" data-flag-title="Container technology in meteorological applications" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="容器技术"><a href="#容器技术" class="headerlink" title="容器技术"></a>容器技术</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/29/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/arya.jpg">
-      <meta itemprop="name" content="Dawn">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Valar Dohaeris">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/29/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-29 19:52:39" itemprop="dateCreated datePublished" datetime="2020-12-29T19:52:39+08:00">2020-12-29</time>
-            </span>
-
-          
-            <span id="/2020/12/29/hello-world/" class="post-meta-item leancloud_visitors" data-flag-title="Hello World" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -705,6 +467,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prepbufr-%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE%E4%BB%8B%E7%BB%8D%E5%8F%8A%E8%A7%A3%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">Prepbufr 格式数据介绍及解码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Prepbufr%E7%9A%84%E8%83%8C%E6%99%AF%E5%8F%8A%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">Prepbufr的背景及介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85bufrlib%E5%8F%8A%E5%85%B6%E4%BB%96%E8%A7%A3%E7%A0%81%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.2.</span> <span class="nav-text">安装bufrlib及其他解码程序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%BC%96%E8%AF%91bufrlib"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 编译bufrlib</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%BC%96%E8%AF%91GSI%E4%B8%ADbufr%E5%B7%A5%E5%85%B7"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 编译GSI中bufr工具</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E7%BC%96%E8%AF%91BUFR%E8%BD%AClittle-r%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 编译BUFR转little r程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%AE%89%E8%A3%85py-ncepbufr"><span class="nav-number">1.2.4.</span> <span class="nav-text">3. 安装py-ncepbufr</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E7%A0%81%E5%8F%8A%E7%BB%98%E5%9B%BE"><span class="nav-number">1.3.</span> <span class="nav-text">解码及绘图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%B8%8B%E8%BD%BDPrepbufr%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 下载Prepbufr数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8prepbufr-decode-all-evn-exe"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 使用prepbufr_decode_all_evn.exe</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8rda-bufr-decode-ADPsfc%E7%A8%8B%E5%BA%8F%E5%8C%85"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 使用rda-bufr-decode-ADPsfc程序包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8py-ncepbufr"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 使用py-ncepbufr</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8MET%E7%94%BB%E8%A7%82%E6%B5%8B%E5%88%86%E5%B8%83"><span class="nav-number">1.3.5.</span> <span class="nav-text">4. 使用MET画观测分布</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
