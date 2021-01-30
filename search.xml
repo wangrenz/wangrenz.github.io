@@ -86,7 +86,7 @@
   <entry>
     <title>Prepbufr introduction and decoding</title>
     <url>/2021/01/31/Prepbufr-introduction-and-decoding/</url>
-    <content><![CDATA[<h2 id="Prepbufr-格式数据介绍及解码"><a href="#Prepbufr-格式数据介绍及解码" class="headerlink" title="Prepbufr 格式数据介绍及解码"></a>Prepbufr 格式数据介绍及解码</h2><h3 id="Prepbufr的背景及介绍"><a href="#Prepbufr的背景及介绍" class="headerlink" title="Prepbufr的背景及介绍"></a>Prepbufr的背景及介绍</h3><p>Prepbufr 数据是美国NCEP在bufr格式数据基础上开发的存储质控观测数据的格式。Prepbufr应用于美国NCEP的业务预报系统，比如GDAS同化系统，RAP/HRRR,NAM等等。后面区域模式本质是WRFDA+WRF。国内也有引进RAP/HRRR区域数值预报系统，如武汉暴雨研究所，福建省局都是RAP/HRRR，华东区域模式是APRS+WRF，北京市气象局睿图模式：GSI+WRF。中国气象局数值预报中心的GRAPES模式中观测是文本文件，没有使用Prepbufr或bufr。</p>
+    <content><![CDATA[<h2 id="Prepbufr-格式数据介绍及解码"><a href="#Prepbufr-格式数据介绍及解码" class="headerlink" title="Prepbufr 格式数据介绍及解码"></a>Prepbufr 格式数据介绍及解码</h2><h3 id="Prepbufr的背景及介绍"><a href="#Prepbufr的背景及介绍" class="headerlink" title="Prepbufr的背景及介绍"></a>Prepbufr的背景及介绍</h3><p>PrepBUFR是NCEP在WMO BUFR格式的基础上，对码表内容进行扩充的数据格式，不仅包含观测数据，还包含观测误差、背景场等信息。该格式目前是NCEP业务模式与同化系统（GSI）所使用的常规观测资料数据格式。不仅GSI同化系统，RAP/HRRR的同化系统WRFDA同样也使用了这套观测数据格式。国内也有引进RAP/HRRR区域数值预报系统，如武汉暴雨研究所，福建省局等。中国气象局数值预报中心的GRAPES模式中观测是文本文件，没有使用Prepbufr或bufr。</p>
 <p>NCEP Prepbufr介绍：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm</a><br>GSI同化系统中Prepbufr介绍：<br><a href="https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf">https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf</a><br><a href="http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf">http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf</a></p>
 <div align="center">
 <img src="/2021/01/31/Prepbufr-introduction-and-decoding/obsproc_workflow.png" width="40%" height="40%">
@@ -201,6 +201,7 @@
 <p>运行解码程序：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python read_qcf.py -f gfs.2021013000.prepbufr</span><br></pre></td></tr></table></figure>
 <p>通过修改以上程序，可以获得个性化输出，比如输出<code>POB QOB TOB</code>即为气压，湿度，温度等。</p>
+<p>此外，<code>py-ncepbufr</code>也提供了一些小工具，如：<code>py-ncepbufr/utils/&#123;prepbufr2nc,nc2prepbufr&#125;</code>等。</p>
 <h4 id="4-使用MET画观测分布"><a href="#4-使用MET画观测分布" class="headerlink" title="4. 使用MET画观测分布"></a>4. 使用<code>MET</code>画观测分布</h4><p><code>MET</code>是模式检验工具，全称The Model Evaluation Tools，the Developmental Testbed Center所开发。</p>
 <p>在线文档：<a href="https://dtcenter.github.io/MET/latest/Users_Guide/index.html">https://dtcenter.github.io/MET/latest/Users_Guide/index.html</a></p>
 <p><code>MET</code>有现成的docker镜像，可pull下来直接食用。还有相应的Python脚本程序<code>metplus</code>。</p>
