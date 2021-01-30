@@ -213,7 +213,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-31 00:46:16 / 修改时间：03:56:45" itemprop="dateCreated datePublished" datetime="2021-01-31T00:46:16+08:00">2021-01-31</time>
+              <time title="创建时间：2021-01-31 00:46:16 / 修改时间：03:59:58" itemprop="dateCreated datePublished" datetime="2021-01-31T00:46:16+08:00">2021-01-31</time>
             </span>
 
           
@@ -352,7 +352,11 @@
 <h4 id="4-使用MET画观测分布"><a href="#4-使用MET画观测分布" class="headerlink" title="4. 使用MET画观测分布"></a>4. 使用<code>MET</code>画观测分布</h4><p><code>MET</code>是模式检验工具，全称The Model Evaluation Tools，the Developmental Testbed Center所开发。</p>
 <p>在线文档：<a target="_blank" rel="noopener" href="https://dtcenter.github.io/MET/latest/Users_Guide/index.html">https://dtcenter.github.io/MET/latest/Users_Guide/index.html</a></p>
 <p><code>MET</code>有现成的docker镜像，可pull下来直接食用。还有相应的Python脚本程序<code>metplus</code>。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker pull dtcenter/met</span><br><span class="line">````</span><br><span class="line"></span><br><span class="line">1. Prepbufr转为netcdf</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line">pb2nc gfs.2021013000.prepbufr gdas_2021013000.nc PB2NCConfig</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull dtcenter/met</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Prepbufr转为netcdf</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pb2nc gfs.2021013000.prepbufr gdas_2021013000.nc PB2NCConfig</span><br></pre></td></tr></table></figure>
 <ol start="2">
 <li>画地面站分布</li>
 </ol>
