@@ -1,87 +1,242 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
-    <entry>
-      <title>Prepbufr introduction and decoding</title>
-      <link href="2021/01/31/Prepbufr-introduction-and-decoding/"/>
-      <url>2021/01/31/Prepbufr-introduction-and-decoding/</url>
-      
-        <content type="html"><![CDATA[<h2 id="Prepbufr-格式数据介绍及解码"><a href="#Prepbufr-格式数据介绍及解码" class="headerlink" title="Prepbufr 格式数据介绍及解码"></a>Prepbufr 格式数据介绍及解码</h2><h3 id="Prepbufr的背景及介绍"><a href="#Prepbufr的背景及介绍" class="headerlink" title="Prepbufr的背景及介绍"></a>Prepbufr的背景及介绍</h3><p>PrepBUFR是NCEP在WMO BUFR格式的基础上，对码表内容进行扩充的数据格式，不仅包含观测数据，还包含观测误差、背景场等信息。该格式目前是NCEP业务模式与同化系统（GSI）所使用的常规观测资料数据格式。不仅GSI同化系统，RAP/HRRR的同化系统WRFDA同样也使用了这套观测数据格式。国内也有引进RAP/HRRR区域数值预报系统，如武汉暴雨研究所，福建省局等。中国气象局数值预报中心的GRAPES模式中观测是文本文件，没有直接使用Prepbufr。</p><p>NCEP Prepbufr介绍：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm</a><br>GSI同化系统中Prepbufr介绍：<br><a href="https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf">https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf</a><br><a href="http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf">http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf</a></p><div align="center"><img src="/2021/01/31/Prepbufr-introduction-and-decoding/obsproc_workflow.png" width="40%" height="40%"><p>NCEP数据处理系统流程</p></div><p>Prepbufr由美国NCEP的质量控制系统（obsproc）生成，而质控控制系统也是结合数值模式来运行，对比和背景场的差异。当然也可以单独运行，但质量控制效果就差很多，背景场本质代表过去的观测对当前的影响。总体分为以下步骤：</p><ol><li><p>PREPOBS_PREPDATA<br>总体质量控制</p></li><li><p>GLERLADJ<br>对水体周边观测的调整</p></li><li><p>PREVENTS<br>在气候模式分析准备观测资料时运行<br>比照背景场，对地面气压进行一些粗略的质量控制检查</p></li><li><p>CQCBUFR<br>对探空观测的质控</p></li><li><p>PROFCQC<br>对飞机观测的质控</p></li><li><p>PREPACQC<br>对风廓线仪观测的质控</p></li><li><p>OIQCBUFR<br>卡住值检查<br>使用所有的观测来执行独立的质控检查</p></li></ol><p>obsproc对不同尺度的分析质量控制过程不一样：如全球预报系统GFS，RAP/HRRR，以及中尺度实况分析RTMA。</p><p>GFS全球预报系统：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm</a></p><p>RAP/HRRR区域模式：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_5.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_5.htm</a></p><p>NAM北美区域模式：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_4.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_4.htm</a></p><p>RTMA中尺度实况分析：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_19.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_19.htm</a><br>更多信息请访问：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/</a></p><p>质控码表： <a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm</a><br>其中质控码小于2的认为是质量比较好的观测，比如WRFDA中质控码设置的就是2。</p><p>关于NCEP质量控制的更多信息请参见上面NCEP的Prepbufr介绍。</p><p>NCEP obsproc 源代码地址: <a href="https://www.nco.ncep.noaa.gov/pmb/codes/nwprod/">https://www.nco.ncep.noaa.gov/pmb/codes/nwprod/</a></p><h3 id="安装bufrlib及其他解码程序"><a href="#安装bufrlib及其他解码程序" class="headerlink" title="安装bufrlib及其他解码程序"></a>安装bufrlib及其他解码程序</h3><blockquote><p>NCEP对bufr的编码和解码用bufrlib库，欧洲中心的eccodes也可以对bufr进行操作，但本人没尝试成功。</p></blockquote><p>基于<code>bufrlib</code>库，目前有很多现成的解码程序使用，如：</p><ul><li>GSI同化系统中的Fortan解码程序: <code>GSI/util/bufr_tools</code></li><li>NCEP ADP BUFR 转<code>little r</code>程序</li><li>美国卫星联合同化中心（JCSDA）开发的Python库：<code>pyncepbufr</code></li></ul><h4 id="1-编译bufrlib"><a href="#1-编译bufrlib" class="headerlink" title="1. 编译bufrlib"></a>1. 编译bufrlib</h4><p>  下载<code>bufrlib</code>源码：<a href="https://emc.ncep.noaa.gov/emc/pages/infrastructure/bufrlib.php">https://emc.ncep.noaa.gov/emc/pages/infrastructure/bufrlib.php</a><br>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar xvf BUFRLIB_v11-3-0.tar</span><br><span class="line"><span class="comment"># 编译说明在解压后的README_BUFRLIB中</span></span><br><span class="line"><span class="comment"># 首先设置编译器</span></span><br><span class="line"><span class="built_in">export</span> CC=gcc</span><br><span class="line"><span class="built_in">export</span> FC=gfortan</span><br><span class="line"><span class="comment"># 编译C程序</span></span><br><span class="line"><span class="variable">$CC</span> -O3 -DUNDERSCORE -w  -c `./getdefflags_C.sh` *.c</span><br><span class="line"><span class="comment"># 编译Fortran</span></span><br><span class="line"><span class="variable">$FC</span> -O3 -DUNDERSCORE -fno-second-underscore -w  -c `./getdefflags_F.sh` modv*.F moda*.F `ls -1 *.F *.f | grep -v <span class="string">&quot;mod[av]_&quot;</span>`</span><br><span class="line"><span class="comment"># 打包为静态库</span></span><br><span class="line">ar crv bufrlib.a *.o</span><br></pre></td></tr></table></figure></p><h4 id="2-编译GSI中bufr工具"><a href="#2-编译GSI中bufr工具" class="headerlink" title="2. 编译GSI中bufr工具"></a>2. 编译GSI中bufr工具</h4><ul><li>下载源码<br><a href="https://github.com/NOAA-EMC/GSI/tree/master/util/bufr_tools">https://github.com/NOAA-EMC/GSI/tree/master/util/bufr_tools</a></li><li>编译，以<code>prepbufr_decode_all_evn.f90</code>为例<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gfortran prepbufr_decode_all_evn.f90 -o prepbufr_decode_all_evn.exe /app/bufrlib/bufrlib.a</span><br></pre></td></tr></table></figure><h4 id="3-编译BUFR转little-r程序"><a href="#3-编译BUFR转little-r程序" class="headerlink" title="3. 编译BUFR转little r程序"></a>3. 编译BUFR转<code>little r</code>程序</h4></li></ul><ul><li>下载源码：<a href="https://github.com/NCAR/rda-bufr-decode-ADPsfc-littler">https://github.com/NCAR/rda-bufr-decode-ADPsfc-littler</a></li></ul><p>本人在解码最新的prepbufr时有点问题，需要在<code>src/bufr_sfc2ob.f</code>中第267行再加一个判断，改为：<br>if(M1(1:1) ==  ‘m’ .or. M1(2:2) == ‘m’) then</p><ul><li>编译：修改<code>install/install.sh</code>第22行，改为<code>bufrlib.a</code>所在的路径。然后执行<code>install/install.sh</code></li><li>编译成功后，在<code>exe</code>下生成如下可执行文件：<code>bufr_sfc2ob.x bufr_ship2ob.x dumpbufr.x runob2lit_imd_obs.x</code></li></ul><h4 id="3-安装py-ncepbufr"><a href="#3-安装py-ncepbufr" class="headerlink" title="3. 安装py-ncepbufr"></a>3. 安装<code>py-ncepbufr</code></h4><ul><li>源码地址：<a href="https://github.com/JCSDA-internal/py-ncepbufr">https://github.com/JCSDA-internal/py-ncepbufr</a></li><li>git仓库有详细的安装说明，就不再赘述</li></ul><h3 id="解码及绘图"><a href="#解码及绘图" class="headerlink" title="解码及绘图"></a>解码及绘图</h3><p>下载<code>Prepbufr</code>数据，实时的可在<code>nomads</code>（NOAA模式存档和分发系统）下载：<a href="https://nomads.ncep.noaa.gov/">https://nomads.ncep.noaa.gov/</a></p><p>历史的可在NCAR RDA网站可下载：<a href="https://rda.ucar.edu/datasets/ds337.0/">https://rda.ucar.edu/datasets/ds337.0/</a></p><p>下面以GFS的观测数据为例做解码：<a href="https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20210130/00/gfs.t00z.prepbufr.nr">https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20210130/00/gfs.t00z.prepbufr.nr</a><br>里面包含了，地面站，探空站，浮标船舶，GPS以及卫星风等。<br>单独的<code>bufr</code>文件如：</p><table><thead><tr><th>文件名</th><th>观测类型</th></tr></thead><tbody><tr><td>gfs.t00z.adpsfc.tm00.bufr_d.nr</td><td>地面数据</td></tr><tr><td>gfs.t00z.adpupa.tm00.bufr_d</td><td>探空数据</td></tr><tr><td>gfs.t00z.aircar.tm00.bufr_d.nr</td><td>飞机报</td></tr><tr><td>gfs.t00z.gpsipw.tm00.bufr_d.nr</td><td>GPS</td></tr><tr><td>gfs.t00z.satwnd.tm00.bufr_d</td><td>卫星风</td></tr><tr><td>还有很多其他的观测类型数据，就不一一列出了。</td><td></td></tr></tbody></table><h4 id="1-下载Prepbufr数据"><a href="#1-下载Prepbufr数据" class="headerlink" title="1. 下载Prepbufr数据"></a>1. 下载<code>Prepbufr</code>数据</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用lftp并行下载</span></span><br><span class="line">lftp -e <span class="string">&#x27;pget -c -n 20 &quot;https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20210130/00/gfs.t00z.prepbufr.nr&quot;&#x27;</span></span><br><span class="line"><span class="comment"># 重命名</span></span><br><span class="line">mv gfs.t00z.prepbufr.nr gfs.2021013000.prepbufr</span><br></pre></td></tr></table></figure><h4 id="2-使用prepbufr-decode-all-evn-exe"><a href="#2-使用prepbufr-decode-all-evn-exe" class="headerlink" title="2. 使用prepbufr_decode_all_evn.exe"></a>2. 使用<code>prepbufr_decode_all_evn.exe</code></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 链接</span></span><br><span class="line">ln -s gfs.2021013000.prepbufr prepbufr</span><br><span class="line"><span class="comment"># 运行解码程序，这里也可以直接改prepbufr_decode_all_evn.f90进行个性化输入输出</span></span><br><span class="line">./prepbufr_decode_all_evn.exe &gt; gfs.2021013000_qc.txt</span><br></pre></td></tr></table></figure><p><code>gfs.2021013000_qc.txt</code>为解码后的结果，以北京站<code>54511</code>为例：</p><div align="center"><img src="/2021/01/31/Prepbufr-introduction-and-decoding/54511_surface_qc.png" width="70%" height="70%"><p>解码结果，54511地面站</p></div><p>其中，<code>obs</code>为观测值，<code>qcf</code>为质控码。</p><h4 id="3-使用rda-bufr-decode-ADPsfc程序包"><a href="#3-使用rda-bufr-decode-ADPsfc程序包" class="headerlink" title="3. 使用rda-bufr-decode-ADPsfc程序包"></a>3. 使用<code>rda-bufr-decode-ADPsfc</code>程序包</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以地面数据为例</span></span><br><span class="line"><span class="comment"># 解码</span></span><br><span class="line">./exe/bufr_sfc2ob.x gfs.t00z.adpsfc.tm00.bufr_d.nr 2021013000</span><br></pre></td></tr></table></figure><p><code>Surface2021011400.obs</code>为解码后的结果。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将输出的文件名写入files.txt</span></span><br><span class="line"><span class="built_in">echo</span> Surface2021013000.obs &gt; files.txt</span><br><span class="line"><span class="comment"># 转little r</span></span><br><span class="line">./exe/runob2lit_imd_obs.x files.txt 2021013000</span><br></pre></td></tr></table></figure><p><code>SURFACE_OBS:2021013000</code>为转换后的<code>little r</code>格式数据。</p><h4 id="4-使用py-ncepbufr"><a href="#4-使用py-ncepbufr" class="headerlink" title="4. 使用py-ncepbufr"></a>4. 使用<code>py-ncepbufr</code></h4><p>读取数据和质控码程序如下：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/env python</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"><span class="keyword">import</span> ncepbufr</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line"></span><br><span class="line">parser.add_argument(<span class="string">&quot;--file&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="built_in">type</span>=<span class="built_in">str</span>, required=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">hdstr=<span class="string">&#x27;SID XOB YOB DHR TYP ELV SAID T29&#x27;</span></span><br><span class="line">obstr=<span class="string">&#x27;POB QOB TOB ZOB UOB VOB PWO MXGS HOVI CAT PRSS TDO PMO&#x27;</span></span><br><span class="line">qcstr=<span class="string">&#x27;PQM QQM TQM ZQM WQM NUL PWQ PMQ&#x27;</span></span><br><span class="line">oestr=<span class="string">&#x27;POE QOE TOE NUL WOE NUL PWE&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># read prepbufr file.</span></span><br><span class="line"></span><br><span class="line">bufr = ncepbufr.<span class="built_in">open</span>(args.file)</span><br><span class="line"><span class="keyword">while</span> bufr.advance() == <span class="number">0</span>: <span class="comment"># loop over messages.</span></span><br><span class="line">    ref_time = datetime.strptime(<span class="built_in">str</span>(bufr.msg_date), <span class="string">&quot;%Y%m%d%H&quot;</span>)</span><br><span class="line">    <span class="keyword">while</span> bufr.load_subset() == <span class="number">0</span>: <span class="comment"># loop over subsets in message.</span></span><br><span class="line">        hdr = bufr.read_subset(hdstr).squeeze()</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">          station_id = hdr[<span class="number">0</span>].tostring()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">          station_id = <span class="string">&quot;unknown&quot;</span></span><br><span class="line">        obs = bufr.read_subset(obstr)</span><br><span class="line">        nlevs = obs.shape[-<span class="number">1</span>]</span><br><span class="line">        oer = bufr.read_subset(oestr)</span><br><span class="line">        qcf = bufr.read_subset(qcstr)</span><br><span class="line">        time = ref_time + timedelta(seconds=hdr[<span class="number">3</span>]*<span class="number">3600</span>)</span><br><span class="line">        print(<span class="string">&quot;%s %8.2f %8.2f %s %3.3d %2.2d&quot;</span> % (station_id,hdr[<span class="number">1</span>],hdr[<span class="number">2</span>],time,<span class="built_in">int</span>(hdr[<span class="number">4</span>]),nlevs))</span><br><span class="line">        print(obs)</span><br><span class="line">bufr.close()</span><br></pre></td></tr></table></figure><p>运行解码程序：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python read_qcf.py -f gfs.2021013000.prepbufr</span><br></pre></td></tr></table></figure><p>通过修改以上程序，可以获得个性化输出，比如输出<code>POB QOB TOB</code>即为气压，湿度，温度等。</p><p>此外，<code>py-ncepbufr</code>也提供了一些小工具，如：<code>py-ncepbufr/utils/&#123;prepbufr2nc,nc2prepbufr&#125;</code>等。</p><h4 id="4-使用MET画观测分布"><a href="#4-使用MET画观测分布" class="headerlink" title="4. 使用MET画观测分布"></a>4. 使用<code>MET</code>画观测分布</h4><p><code>MET</code>是模式检验工具，全称The Model Evaluation Tools，the Developmental Testbed Center所开发。</p><p>在线文档：<a href="https://dtcenter.github.io/MET/latest/Users_Guide/index.html">https://dtcenter.github.io/MET/latest/Users_Guide/index.html</a></p><p><code>MET</code>有现成的docker镜像，可pull下来直接食用。还有相应的Python脚本程序<code>metplus</code>。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull dtcenter/met</span><br></pre></td></tr></table></figure><ol><li>Prepbufr转为netcdf</li></ol><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pb2nc gfs.2021013000.prepbufr gdas_2021013000.nc PB2NCConfig</span><br></pre></td></tr></table></figure><ol start="2"><li>画地面站分布</li></ol><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot_point_obs -msg_typ ADPSFC gdas_2021013000.nc gdas_2021013000_adpsfc.ps</span><br></pre></td></tr></table></figure><div align="center"><img src="/2021/01/31/Prepbufr-introduction-and-decoding/2020011900_adpsfc.png" width="60%" height="60%"><p>全球地面站分布</p></div><ol start="3"><li>画探空站分布</li></ol><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot_point_obs -msg_typ ADPUPA gdas_2021013000.nc gdas_2021013000_adpupa.ps</span><br></pre></td></tr></table></figure><div align="center"><img src="/2021/01/31/Prepbufr-introduction-and-decoding/2020011900_adpupa.png" width="60%" height="60%"><p>全球探空站分布</p></div><p><strong>写在最后</strong>：</p><p>以上解码<code>Prepbufr</code>我们可以获得完整的全球GTS交换数据。对于国内常常拿不到的常规观测或探空，通过解码<code>Prepbufr</code>获取也不失为一种“正当途径”。</p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> 气象数据 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Python processing sounding data and plotting</title>
-      <link href="2021/01/02/Python-processing-sounding-data-and-plotting/"/>
-      <url>2021/01/02/Python-processing-sounding-data-and-plotting/</url>
-      
-        <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近重新整理之前的分析结果，发现一些有意思的图，来分享出来。2020年美国飓风 <code>Laura</code> 临近登陆时，NOAA派出飞机投放探空仪观测，很快推特上便有了相应的T-lnP图，如下图。</p><!-- ![Lena](/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg?40) --><div align="center"><img src="/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg" width="30%" height="30%"></div><p>而我国在2020年，也进行了某某计划，在台风森拉克过境后，即在台风外围投放了数十枚探空仪，获取到了非常密集的温压湿风探空曲线。这是当时的卫星云图(来源：韩国GK2A卫星)，可以看到当时台风主体已经进入越南境内，而释放探空仪的位置在海南岛东南近海。</p><div align="center"><img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_rgb-true_ea010lc_202008021000.srv.png" width="50%" height="50%"><p>真彩色云图</p></div><div align="center"><img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_enhc-color-ir105_ea020lc_202008021000.srv.png" width="50%" height="50%"><p>红外增强云图</p></div><h3 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h3><p>由于数据是excel的表格，我们用pandas来读取表单。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime,timedelta</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">f = <span class="string">&#x27;17_54_4.xls&#x27;</span></span><br><span class="line"><span class="comment"># 将时间解析为datetime类</span></span><br><span class="line">dateparse = <span class="keyword">lambda</span> x: datetime.strptime(<span class="string">&#x27;2020-08-02 &#x27;</span> + x, <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">df = pd.read_excel(f,sheet_name=<span class="number">0</span>,parse_dates=[<span class="string">&#x27;时间&#x27;</span>], date_parser=dateparse)</span><br><span class="line"><span class="comment"># 时间         纬度          经度     位势高度     温度     湿度     气压  风速  风向</span></span><br><span class="line"><span class="comment">#                                     m           degC     %       hPa   m/s  deg   </span></span><br><span class="line"><span class="comment"># convert BJT -&gt; UTC</span></span><br><span class="line">df[<span class="string">&#x27;时间&#x27;</span>] = df[<span class="string">&#x27;时间&#x27;</span>] - timedelta(hours=<span class="number">8</span>)</span><br><span class="line">df[df == -<span class="number">9999</span>] = np.nan</span><br><span class="line">df = df[::-<span class="number">1</span>]</span><br></pre></td></tr></table></figure><div align="center"><img src="/2021/01/02/Python-processing-sounding-data-and-plotting/drop_res.png" width="50%" height="50%"><p>读取结果</p></div><h3 id="绘制T-lnP图"><a href="#绘制T-lnP图" class="headerlink" title="绘制T-lnP图"></a>绘制T-lnP图</h3><p>用NCAR开发的<code>Metpy</code>包来画T-lnP图，官方链接为：<a href="https://unidata.github.io/MetPy/latest/">https://unidata.github.io/MetPy/latest/</a><br>官方提供了很多例子，包括画常规天气图和T-lnP，以及计算物理量、诊断量。链接：<a href="https://unidata.github.io/MetPy/latest/examples/index.html">https://unidata.github.io/MetPy/latest/examples/index.html</a></p><p>根据<code>Simple_Sounding</code>例子，来画我们需要的最简单的T-lnP。注意：美国人用的是斜T-lnP，即旋转30度，而国内是T-lnP，需要改成0度。对应的函数接口为：<br><a href="https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT">https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT</a></p><div align="center"><img src="/2021/01/02/Python-processing-sounding-data-and-plotting/skewt_api.png" width="60%" height="60%"><p>SkewT的函数说明</p></div><p>下面为具体绘图代码</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> metpy.calc <span class="keyword">as</span> mpcalc</span><br><span class="line"><span class="keyword">from</span> metpy.plots <span class="keyword">import</span> SkewT, Hodograph</span><br><span class="line"><span class="keyword">from</span> metpy.units <span class="keyword">import</span> units</span><br><span class="line"><span class="keyword">import</span> metpy.interpolate <span class="keyword">as</span> mpi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为Metpy的数据类</span></span><br><span class="line">p = df[<span class="string">&#x27;气压&#x27;</span>].values * units.hPa</span><br><span class="line">T = df[<span class="string">&#x27;温度&#x27;</span>].values * units.degC</span><br><span class="line">rh = df[<span class="string">&#x27;湿度&#x27;</span>].values / <span class="number">100</span></span><br><span class="line">Td = mpcalc.dewpoint_rh(T, rh)</span><br><span class="line">wsp = df[<span class="string">&#x27;风速&#x27;</span>].values * units(<span class="string">&#x27;m/s&#x27;</span>)</span><br><span class="line">wdr = df[<span class="string">&#x27;风向&#x27;</span>].values * units.degrees</span><br><span class="line">u, v = mpcalc.wind_components(wsp, wdr)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开一个画布</span></span><br><span class="line">fig = plt.figure(figsize=(<span class="number">12</span>, <span class="number">12</span>))</span><br><span class="line">skew = SkewT(fig, rotation=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画温度、露点和风</span></span><br><span class="line">skew.plot(p, T, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">skew.plot(p, Td, <span class="string">&#x27;g&#x27;</span>)</span><br><span class="line">skew.plot_barbs(p[::<span class="number">5</span>], u[::<span class="number">5</span>], v[::<span class="number">5</span>])</span><br><span class="line">skew.ax.set_ylim(<span class="number">1000</span>, <span class="number">250</span>)</span><br><span class="line">skew.ax.set_xlim(-<span class="number">40</span>, <span class="number">30</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算对流凝结高度，p[0]为最低层气压</span></span><br><span class="line">lcl_pressure, lcl_temperature = mpcalc.lcl(p[<span class="number">0</span>], T[<span class="number">0</span>], Td[<span class="number">0</span>])</span><br><span class="line">skew.plot(lcl_pressure, lcl_temperature, <span class="string">&#x27;ko&#x27;</span>, markerfacecolor=<span class="string">&#x27;black&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画状态曲线</span></span><br><span class="line">prof = mpcalc.parcel_profile(p, T[<span class="number">0</span>], Td[<span class="number">0</span>]).to(<span class="string">&#x27;degC&#x27;</span>)</span><br><span class="line">skew.plot(p, prof, <span class="string">&#x27;k&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画对流有效位能和抑制能</span></span><br><span class="line">skew.shade_cin(p, T, prof)</span><br><span class="line">skew.shade_cape(p, T, prof)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画0度温度线，图中紫色虚线</span></span><br><span class="line">skew.ax.axvline(<span class="number">0</span>, color=<span class="string">&#x27;c&#x27;</span>, linestyle=<span class="string">&#x27;--&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 干绝热线</span></span><br><span class="line">skew.plot_dry_adiabats()</span><br><span class="line"><span class="comment"># 湿绝热线</span></span><br><span class="line">skew.plot_moist_adiabats()</span><br><span class="line"><span class="comment"># 等比湿线</span></span><br><span class="line">skew.plot_mixing_lines()</span><br></pre></td></tr></table></figure><div align="center"><img src="/2021/01/02/Python-processing-sounding-data-and-plotting/tlnp_20200802T10.png" width="60%" height="60%"><p>T-lnP图, 世界时: 2020-08-02T10</p></div><p>可以看出台风过后CAPE还是比较大。好了，这期就到这了。</p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> Python </tag>
-            
-            <tag> 气象绘图 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Container technology in meteorological applications</title>
-      <link href="2020/12/29/Container-technology-in-meteorological-applications/"/>
-      <url>2020/12/29/Container-technology-in-meteorological-applications/</url>
-      
-        <content type="html"><![CDATA[<h2 id="容器技术"><a href="#容器技术" class="headerlink" title="容器技术"></a>容器技术</h2>]]></content>
-      
-      
+<search>
+  <entry>
+    <title>Container technology in meteorological applications</title>
+    <url>/2020/12/29/Container-technology-in-meteorological-applications/</url>
+    <content><![CDATA[<h2 id="容器技术"><a href="#容器技术" class="headerlink" title="容器技术"></a>容器技术</h2>]]></content>
       <categories>
-          
-          <category> IT技术 </category>
-          
+        <category>IT技术</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> Docker </tag>
-            
-            <tag> Airflow </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Hello World</title>
-      <link href="2020/12/29/hello-world/"/>
-      <url>2020/12/29/hello-world/</url>
-      
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-  
-  
+      <tags>
+        <tag>Docker</tag>
+        <tag>Airflow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python processing sounding data and plotting</title>
+    <url>/2021/01/02/Python-processing-sounding-data-and-plotting/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近重新整理之前的分析结果，发现一些有意思的图，来分享出来。2020年美国飓风 <code>Laura</code> 临近登陆时，NOAA派出飞机投放探空仪观测，很快推特上便有了相应的T-lnP图，如下图。</p>
+<!-- ![Lena](/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg?40) -->
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/laura_tlnp.jpg" width="30%" height="30%">
+</div>
+
+<p>而我国在2020年，也进行了某某计划，在台风森拉克过境后，即在台风外围投放了数十枚探空仪，获取到了非常密集的温压湿风探空曲线。这是当时的卫星云图(来源：韩国GK2A卫星)，可以看到当时台风主体已经进入越南境内，而释放探空仪的位置在海南岛东南近海。</p>
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_rgb-true_ea010lc_202008021000.srv.png" width="50%" height="50%">
+
+<p>真彩色云图</p>
+</div>
+
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/gk2a_ami_le1b_enhc-color-ir105_ea020lc_202008021000.srv.png" width="50%" height="50%">
+
+<p>红外增强云图</p>
+</div>
+
+
+
+<h3 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h3><p>由于数据是excel的表格，我们用pandas来读取表单。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime,timedelta</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">f = <span class="string">&#x27;17_54_4.xls&#x27;</span></span><br><span class="line"><span class="comment"># 将时间解析为datetime类</span></span><br><span class="line">dateparse = <span class="keyword">lambda</span> x: datetime.strptime(<span class="string">&#x27;2020-08-02 &#x27;</span> + x, <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">df = pd.read_excel(f,sheet_name=<span class="number">0</span>,parse_dates=[<span class="string">&#x27;时间&#x27;</span>], date_parser=dateparse)</span><br><span class="line"><span class="comment"># 时间         纬度          经度     位势高度     温度     湿度     气压  风速  风向</span></span><br><span class="line"><span class="comment">#                                     m           degC     %       hPa   m/s  deg   </span></span><br><span class="line"><span class="comment"># convert BJT -&gt; UTC</span></span><br><span class="line">df[<span class="string">&#x27;时间&#x27;</span>] = df[<span class="string">&#x27;时间&#x27;</span>] - timedelta(hours=<span class="number">8</span>)</span><br><span class="line">df[df == -<span class="number">9999</span>] = np.nan</span><br><span class="line">df = df[::-<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/drop_res.png" width="50%" height="50%">
+
+<p>读取结果</p>
+</div>
+
+
+<h3 id="绘制T-lnP图"><a href="#绘制T-lnP图" class="headerlink" title="绘制T-lnP图"></a>绘制T-lnP图</h3><p>用NCAR开发的<code>Metpy</code>包来画T-lnP图，官方链接为：<a href="https://unidata.github.io/MetPy/latest/">https://unidata.github.io/MetPy/latest/</a><br>官方提供了很多例子，包括画常规天气图和T-lnP，以及计算物理量、诊断量。链接：<a href="https://unidata.github.io/MetPy/latest/examples/index.html">https://unidata.github.io/MetPy/latest/examples/index.html</a></p>
+<p>根据<code>Simple_Sounding</code>例子，来画我们需要的最简单的T-lnP。注意：美国人用的是斜T-lnP，即旋转30度，而国内是T-lnP，需要改成0度。对应的函数接口为：<br><a href="https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT">https://unidata.github.io/MetPy/latest/api/generated/metpy.plots.SkewT.html#metpy.plots.SkewT</a></p>
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/skewt_api.png" width="60%" height="60%">
+
+<p>SkewT的函数说明</p>
+</div>
+
+<p>下面为具体绘图代码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> metpy.calc <span class="keyword">as</span> mpcalc</span><br><span class="line"><span class="keyword">from</span> metpy.plots <span class="keyword">import</span> SkewT, Hodograph</span><br><span class="line"><span class="keyword">from</span> metpy.units <span class="keyword">import</span> units</span><br><span class="line"><span class="keyword">import</span> metpy.interpolate <span class="keyword">as</span> mpi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为Metpy的数据类</span></span><br><span class="line">p = df[<span class="string">&#x27;气压&#x27;</span>].values * units.hPa</span><br><span class="line">T = df[<span class="string">&#x27;温度&#x27;</span>].values * units.degC</span><br><span class="line">rh = df[<span class="string">&#x27;湿度&#x27;</span>].values / <span class="number">100</span></span><br><span class="line">Td = mpcalc.dewpoint_rh(T, rh)</span><br><span class="line">wsp = df[<span class="string">&#x27;风速&#x27;</span>].values * units(<span class="string">&#x27;m/s&#x27;</span>)</span><br><span class="line">wdr = df[<span class="string">&#x27;风向&#x27;</span>].values * units.degrees</span><br><span class="line">u, v = mpcalc.wind_components(wsp, wdr)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开一个画布</span></span><br><span class="line">fig = plt.figure(figsize=(<span class="number">12</span>, <span class="number">12</span>))</span><br><span class="line">skew = SkewT(fig, rotation=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画温度、露点和风</span></span><br><span class="line">skew.plot(p, T, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">skew.plot(p, Td, <span class="string">&#x27;g&#x27;</span>)</span><br><span class="line">skew.plot_barbs(p[::<span class="number">5</span>], u[::<span class="number">5</span>], v[::<span class="number">5</span>])</span><br><span class="line">skew.ax.set_ylim(<span class="number">1000</span>, <span class="number">250</span>)</span><br><span class="line">skew.ax.set_xlim(-<span class="number">40</span>, <span class="number">30</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算对流凝结高度，p[0]为最低层气压</span></span><br><span class="line">lcl_pressure, lcl_temperature = mpcalc.lcl(p[<span class="number">0</span>], T[<span class="number">0</span>], Td[<span class="number">0</span>])</span><br><span class="line">skew.plot(lcl_pressure, lcl_temperature, <span class="string">&#x27;ko&#x27;</span>, markerfacecolor=<span class="string">&#x27;black&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画状态曲线</span></span><br><span class="line">prof = mpcalc.parcel_profile(p, T[<span class="number">0</span>], Td[<span class="number">0</span>]).to(<span class="string">&#x27;degC&#x27;</span>)</span><br><span class="line">skew.plot(p, prof, <span class="string">&#x27;k&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画对流有效位能和抑制能</span></span><br><span class="line">skew.shade_cin(p, T, prof)</span><br><span class="line">skew.shade_cape(p, T, prof)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画0度温度线，图中紫色虚线</span></span><br><span class="line">skew.ax.axvline(<span class="number">0</span>, color=<span class="string">&#x27;c&#x27;</span>, linestyle=<span class="string">&#x27;--&#x27;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 干绝热线</span></span><br><span class="line">skew.plot_dry_adiabats()</span><br><span class="line"><span class="comment"># 湿绝热线</span></span><br><span class="line">skew.plot_moist_adiabats()</span><br><span class="line"><span class="comment"># 等比湿线</span></span><br><span class="line">skew.plot_mixing_lines()</span><br></pre></td></tr></table></figure>
+
+<div align="center">
+<img src="/2021/01/02/Python-processing-sounding-data-and-plotting/tlnp_20200802T10.png" width="60%" height="60%">
+
+<p>T-lnP图, 世界时: 2020-08-02T10</p>
+</div>
+
+<p>可以看出台风过后CAPE还是比较大。好了，这期就到这了。</p>
+]]></content>
+      <tags>
+        <tag>Python</tag>
+        <tag>气象绘图</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2020/12/29/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Prepbufr introduction and decoding</title>
+    <url>/2021/01/31/Prepbufr-introduction-and-decoding/</url>
+    <content><![CDATA[<h2 id="Prepbufr-格式数据介绍及解码"><a href="#Prepbufr-格式数据介绍及解码" class="headerlink" title="Prepbufr 格式数据介绍及解码"></a>Prepbufr 格式数据介绍及解码</h2><h3 id="Prepbufr的背景及介绍"><a href="#Prepbufr的背景及介绍" class="headerlink" title="Prepbufr的背景及介绍"></a>Prepbufr的背景及介绍</h3><p>PrepBUFR是NCEP在WMO BUFR格式的基础上，对码表内容进行扩充的数据格式，不仅包含观测数据，还包含观测误差、背景场等信息。该格式目前是NCEP业务模式与同化系统（GSI）所使用的常规观测资料数据格式。不仅GSI同化系统，RAP/HRRR的同化系统WRFDA同样也使用了这套观测数据格式。国内也有引进RAP/HRRR区域数值预报系统，如武汉暴雨研究所，福建省局等。中国气象局数值预报中心的GRAPES模式中观测是文本文件，没有直接使用Prepbufr。</p>
+<p>NCEP Prepbufr介绍：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/document.htm</a><br>GSI同化系统中Prepbufr介绍：<br><a href="https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf">https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/presentations/gsi-tutorial-bufr/L6-06292011-BUFRandPrepBUFR-Ruifang_Li.pdf</a><br><a href="http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf">http://www.dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf</a></p>
+<div align="center">
+<img src="/2021/01/31/Prepbufr-introduction-and-decoding/obsproc_workflow.png" width="40%" height="40%">
+
+<p>NCEP数据处理系统流程</p>
+</div>
+
+
+<p>Prepbufr由美国NCEP的质量控制系统（obsproc）生成，而质控控制系统也是结合数值模式来运行，对比和背景场的差异。当然也可以单独运行，但质量控制效果就差很多，背景场本质代表过去的观测对当前的影响。总体分为以下步骤：</p>
+<ol>
+<li><p>PREPOBS_PREPDATA<br>总体质量控制</p>
+</li>
+<li><p>GLERLADJ<br>对水体周边观测的调整</p>
+</li>
+<li><p>PREVENTS<br>在气候模式分析准备观测资料时运行<br>比照背景场，对地面气压进行一些粗略的质量控制检查</p>
+</li>
+<li><p>CQCBUFR<br>对探空观测的质控</p>
+</li>
+<li><p>PROFCQC<br>对飞机观测的质控</p>
+</li>
+<li><p>PREPACQC<br>对风廓线仪观测的质控</p>
+</li>
+<li><p>OIQCBUFR<br>卡住值检查<br>使用所有的观测来执行独立的质控检查</p>
+</li>
+</ol>
+<p>obsproc对不同尺度的分析质量控制过程不一样：如全球预报系统GFS，RAP/HRRR，以及中尺度实况分析RTMA。</p>
+<p>GFS全球预报系统：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm</a></p>
+<p>RAP/HRRR区域模式：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_5.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_5.htm</a></p>
+<p>NAM北美区域模式：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_4.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_4.htm</a></p>
+<p>RTMA中尺度实况分析：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_19.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_19.htm</a><br>更多信息请访问：<a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/</a></p>
+<p>质控码表： <a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm">https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm</a><br>其中质控码小于2的认为是质量比较好的观测，比如WRFDA中质控码设置的就是2。</p>
+<p>关于NCEP质量控制的更多信息请参见上面NCEP的Prepbufr介绍。</p>
+<p>NCEP obsproc 源代码地址: <a href="https://www.nco.ncep.noaa.gov/pmb/codes/nwprod/">https://www.nco.ncep.noaa.gov/pmb/codes/nwprod/</a></p>
+<h3 id="安装bufrlib及其他解码程序"><a href="#安装bufrlib及其他解码程序" class="headerlink" title="安装bufrlib及其他解码程序"></a>安装bufrlib及其他解码程序</h3><blockquote>
+<p>NCEP对bufr的编码和解码用bufrlib库，欧洲中心的eccodes也可以对bufr进行操作，但本人没尝试成功。</p>
+</blockquote>
+<p>基于<code>bufrlib</code>库，目前有很多现成的解码程序使用，如：</p>
+<ul>
+<li>GSI同化系统中的Fortan解码程序: <code>GSI/util/bufr_tools</code></li>
+<li>NCEP ADP BUFR 转<code>little r</code>程序</li>
+<li>美国卫星联合同化中心（JCSDA）开发的Python库：<code>pyncepbufr</code></li>
+</ul>
+<h4 id="1-编译bufrlib"><a href="#1-编译bufrlib" class="headerlink" title="1. 编译bufrlib"></a>1. 编译bufrlib</h4><p>  下载<code>bufrlib</code>源码：<a href="https://emc.ncep.noaa.gov/emc/pages/infrastructure/bufrlib.php">https://emc.ncep.noaa.gov/emc/pages/infrastructure/bufrlib.php</a><br>  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar xvf BUFRLIB_v11-3-0.tar</span><br><span class="line"><span class="comment"># 编译说明在解压后的README_BUFRLIB中</span></span><br><span class="line"><span class="comment"># 首先设置编译器</span></span><br><span class="line"><span class="built_in">export</span> CC=gcc</span><br><span class="line"><span class="built_in">export</span> FC=gfortan</span><br><span class="line"><span class="comment"># 编译C程序</span></span><br><span class="line"><span class="variable">$CC</span> -O3 -DUNDERSCORE -w  -c `./getdefflags_C.sh` *.c</span><br><span class="line"><span class="comment"># 编译Fortran</span></span><br><span class="line"><span class="variable">$FC</span> -O3 -DUNDERSCORE -fno-second-underscore -w  -c `./getdefflags_F.sh` modv*.F moda*.F `ls -1 *.F *.f | grep -v <span class="string">&quot;mod[av]_&quot;</span>`</span><br><span class="line"><span class="comment"># 打包为静态库</span></span><br><span class="line">ar crv bufrlib.a *.o</span><br></pre></td></tr></table></figure></p>
+<h4 id="2-编译GSI中bufr工具"><a href="#2-编译GSI中bufr工具" class="headerlink" title="2. 编译GSI中bufr工具"></a>2. 编译GSI中bufr工具</h4><ul>
+<li>下载源码<br><a href="https://github.com/NOAA-EMC/GSI/tree/master/util/bufr_tools">https://github.com/NOAA-EMC/GSI/tree/master/util/bufr_tools</a></li>
+<li>编译，以<code>prepbufr_decode_all_evn.f90</code>为例<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gfortran prepbufr_decode_all_evn.f90 -o prepbufr_decode_all_evn.exe /app/bufrlib/bufrlib.a</span><br></pre></td></tr></table></figure>
+<h4 id="3-编译BUFR转little-r程序"><a href="#3-编译BUFR转little-r程序" class="headerlink" title="3. 编译BUFR转little r程序"></a>3. 编译BUFR转<code>little r</code>程序</h4></li>
+</ul>
+<ul>
+<li>下载源码：<a href="https://github.com/NCAR/rda-bufr-decode-ADPsfc-littler">https://github.com/NCAR/rda-bufr-decode-ADPsfc-littler</a></li>
+</ul>
+<p>本人在解码最新的prepbufr时有点问题，需要在<code>src/bufr_sfc2ob.f</code>中第267行再加一个判断，改为：<br>if(M1(1:1) ==  ‘m’ .or. M1(2:2) == ‘m’) then</p>
+<ul>
+<li>编译：修改<code>install/install.sh</code>第22行，改为<code>bufrlib.a</code>所在的路径。然后执行<code>install/install.sh</code></li>
+<li>编译成功后，在<code>exe</code>下生成如下可执行文件：<code>bufr_sfc2ob.x bufr_ship2ob.x dumpbufr.x runob2lit_imd_obs.x</code></li>
+</ul>
+<h4 id="3-安装py-ncepbufr"><a href="#3-安装py-ncepbufr" class="headerlink" title="3. 安装py-ncepbufr"></a>3. 安装<code>py-ncepbufr</code></h4><ul>
+<li>源码地址：<a href="https://github.com/JCSDA-internal/py-ncepbufr">https://github.com/JCSDA-internal/py-ncepbufr</a></li>
+<li>git仓库有详细的安装说明，就不再赘述</li>
+</ul>
+<h3 id="解码及绘图"><a href="#解码及绘图" class="headerlink" title="解码及绘图"></a>解码及绘图</h3><p>下载<code>Prepbufr</code>数据，实时的可在<code>nomads</code>（NOAA模式存档和分发系统）下载：<a href="https://nomads.ncep.noaa.gov/">https://nomads.ncep.noaa.gov/</a></p>
+<p>历史的可在NCAR RDA网站可下载：<a href="https://rda.ucar.edu/datasets/ds337.0/">https://rda.ucar.edu/datasets/ds337.0/</a></p>
+<p>下面以GFS的观测数据为例做解码：<a href="https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20210130/00/gfs.t00z.prepbufr.nr">https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20210130/00/gfs.t00z.prepbufr.nr</a><br>里面包含了，地面站，探空站，浮标船舶，GPS以及卫星风等。<br>单独的<code>bufr</code>文件如：</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>观测类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>gfs.t00z.adpsfc.tm00.bufr_d.nr</td>
+<td>地面数据</td>
+</tr>
+<tr>
+<td>gfs.t00z.adpupa.tm00.bufr_d</td>
+<td>探空数据</td>
+</tr>
+<tr>
+<td>gfs.t00z.aircar.tm00.bufr_d.nr</td>
+<td>飞机报</td>
+</tr>
+<tr>
+<td>gfs.t00z.gpsipw.tm00.bufr_d.nr</td>
+<td>GPS</td>
+</tr>
+<tr>
+<td>gfs.t00z.satwnd.tm00.bufr_d</td>
+<td>卫星风</td>
+</tr>
+<tr>
+<td>还有很多其他的观测类型数据，就不一一列出了。</td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="1-下载Prepbufr数据"><a href="#1-下载Prepbufr数据" class="headerlink" title="1. 下载Prepbufr数据"></a>1. 下载<code>Prepbufr</code>数据</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用lftp并行下载</span></span><br><span class="line">lftp -e <span class="string">&#x27;pget -c -n 20 &quot;https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20210130/00/gfs.t00z.prepbufr.nr&quot;&#x27;</span></span><br><span class="line"><span class="comment"># 重命名</span></span><br><span class="line">mv gfs.t00z.prepbufr.nr gfs.2021013000.prepbufr</span><br></pre></td></tr></table></figure>
+<h4 id="2-使用prepbufr-decode-all-evn-exe"><a href="#2-使用prepbufr-decode-all-evn-exe" class="headerlink" title="2. 使用prepbufr_decode_all_evn.exe"></a>2. 使用<code>prepbufr_decode_all_evn.exe</code></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 链接</span></span><br><span class="line">ln -s gfs.2021013000.prepbufr prepbufr</span><br><span class="line"><span class="comment"># 运行解码程序，这里也可以直接改prepbufr_decode_all_evn.f90进行个性化输入输出</span></span><br><span class="line">./prepbufr_decode_all_evn.exe &gt; gfs.2021013000_qc.txt</span><br></pre></td></tr></table></figure>
+<p><code>gfs.2021013000_qc.txt</code>为解码后的结果，以北京站<code>54511</code>为例：</p>
+<div align="center">
+<img src="/2021/01/31/Prepbufr-introduction-and-decoding/54511_surface_qc.png" width="70%" height="70%">
+
+<p>解码结果，54511地面站</p>
+</div>
+
+<p>其中，<code>obs</code>为观测值，<code>qcf</code>为质控码。</p>
+<h4 id="3-使用rda-bufr-decode-ADPsfc程序包"><a href="#3-使用rda-bufr-decode-ADPsfc程序包" class="headerlink" title="3. 使用rda-bufr-decode-ADPsfc程序包"></a>3. 使用<code>rda-bufr-decode-ADPsfc</code>程序包</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 以地面数据为例</span></span><br><span class="line"><span class="comment"># 解码</span></span><br><span class="line">./exe/bufr_sfc2ob.x gfs.t00z.adpsfc.tm00.bufr_d.nr 2021013000</span><br></pre></td></tr></table></figure>
+<p><code>Surface2021011400.obs</code>为解码后的结果。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将输出的文件名写入files.txt</span></span><br><span class="line"><span class="built_in">echo</span> Surface2021013000.obs &gt; files.txt</span><br><span class="line"><span class="comment"># 转little r</span></span><br><span class="line">./exe/runob2lit_imd_obs.x files.txt 2021013000</span><br></pre></td></tr></table></figure>
+<p><code>SURFACE_OBS:2021013000</code>为转换后的<code>little r</code>格式数据。</p>
+<h4 id="4-使用py-ncepbufr"><a href="#4-使用py-ncepbufr" class="headerlink" title="4. 使用py-ncepbufr"></a>4. 使用<code>py-ncepbufr</code></h4><p>读取数据和质控码程序如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/bin/env python</span></span><br><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> print_function</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"><span class="keyword">import</span> ncepbufr</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line"></span><br><span class="line">parser.add_argument(<span class="string">&quot;--file&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="built_in">type</span>=<span class="built_in">str</span>, required=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">hdstr=<span class="string">&#x27;SID XOB YOB DHR TYP ELV SAID T29&#x27;</span></span><br><span class="line">obstr=<span class="string">&#x27;POB QOB TOB ZOB UOB VOB PWO MXGS HOVI CAT PRSS TDO PMO&#x27;</span></span><br><span class="line">qcstr=<span class="string">&#x27;PQM QQM TQM ZQM WQM NUL PWQ PMQ&#x27;</span></span><br><span class="line">oestr=<span class="string">&#x27;POE QOE TOE NUL WOE NUL PWE&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># read prepbufr file.</span></span><br><span class="line"></span><br><span class="line">bufr = ncepbufr.<span class="built_in">open</span>(args.file)</span><br><span class="line"><span class="keyword">while</span> bufr.advance() == <span class="number">0</span>: <span class="comment"># loop over messages.</span></span><br><span class="line">    ref_time = datetime.strptime(<span class="built_in">str</span>(bufr.msg_date), <span class="string">&quot;%Y%m%d%H&quot;</span>)</span><br><span class="line">    <span class="keyword">while</span> bufr.load_subset() == <span class="number">0</span>: <span class="comment"># loop over subsets in message.</span></span><br><span class="line">        hdr = bufr.read_subset(hdstr).squeeze()</span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">          station_id = hdr[<span class="number">0</span>].tostring()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">          station_id = <span class="string">&quot;unknown&quot;</span></span><br><span class="line">        obs = bufr.read_subset(obstr)</span><br><span class="line">        nlevs = obs.shape[-<span class="number">1</span>]</span><br><span class="line">        oer = bufr.read_subset(oestr)</span><br><span class="line">        qcf = bufr.read_subset(qcstr)</span><br><span class="line">        time = ref_time + timedelta(seconds=hdr[<span class="number">3</span>]*<span class="number">3600</span>)</span><br><span class="line">        print(<span class="string">&quot;%s %8.2f %8.2f %s %3.3d %2.2d&quot;</span> % (station_id,hdr[<span class="number">1</span>],hdr[<span class="number">2</span>],time,<span class="built_in">int</span>(hdr[<span class="number">4</span>]),nlevs))</span><br><span class="line">        print(obs)</span><br><span class="line">bufr.close()</span><br></pre></td></tr></table></figure>
+<p>运行解码程序：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python read_prepbufr.py -f gfs.2021013000.prepbufr</span><br></pre></td></tr></table></figure>
+<p>通过修改以上程序，可以获得个性化输出，比如输出<code>POB QOB TOB</code>即为气压，湿度，温度等。</p>
+<p>此外，<code>py-ncepbufr</code>也提供了一些小工具，如：<code>py-ncepbufr/utils/&#123;prepbufr2nc,nc2prepbufr&#125;</code>等。</p>
+<h4 id="4-使用MET画观测分布"><a href="#4-使用MET画观测分布" class="headerlink" title="4. 使用MET画观测分布"></a>4. 使用<code>MET</code>画观测分布</h4><p><code>MET</code>是模式检验工具，全称The Model Evaluation Tools，the Developmental Testbed Center所开发。</p>
+<p>在线文档：<a href="https://dtcenter.github.io/MET/latest/Users_Guide/index.html">https://dtcenter.github.io/MET/latest/Users_Guide/index.html</a></p>
+<p><code>MET</code>有现成的docker镜像，可pull下来直接食用。还有相应的Python脚本程序<code>metplus</code>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker pull dtcenter/met</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Prepbufr转为netcdf</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pb2nc gfs.2021013000.prepbufr gdas_2021013000.nc PB2NCConfig</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>画地面站分布</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plot_point_obs -msg_typ ADPSFC gdas_2021013000.nc gdas_2021013000_adpsfc.ps</span><br></pre></td></tr></table></figure>
+<div align="center">
+<img src="/2021/01/31/Prepbufr-introduction-and-decoding/2020011900_adpsfc.png" width="60%" height="60%">
+
+<p>全球地面站分布</p>
+</div>
+
+<ol start="3">
+<li>画探空站分布</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plot_point_obs -msg_typ ADPUPA gdas_2021013000.nc gdas_2021013000_adpupa.ps</span><br></pre></td></tr></table></figure>
+<div align="center">
+<img src="/2021/01/31/Prepbufr-introduction-and-decoding/2020011900_adpupa.png" width="60%" height="60%">
+
+<p>全球探空站分布</p>
+</div>
+
+
+
+<p><strong>写在最后</strong>：</p>
+<p>以上解码<code>Prepbufr</code>我们可以获得完整的全球GTS交换数据。对于国内常常拿不到的常规观测或探空，通过解码<code>Prepbufr</code>获取也不失为一种“正当途径”。</p>
+]]></content>
+      <tags>
+        <tag>气象数据</tag>
+      </tags>
+  </entry>
 </search>
